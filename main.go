@@ -34,10 +34,10 @@ func main() {
 }
 
 func TextEditing(text string) string {
-	result := edit.EditHexBin(text)
-	result = edit.EditCase(text)
-	//result = edit.EditPunctuation(text)
-	//result = edit.EditQuote(text)
-	//result = edit.EditAN(text)
-	return result
+	text = edit.EditHexBin(text)
+	text = edit.EditCase(text)
+	text = edit.EditPunctuation(text)
+	text = edit.EditQuote(text)
+	text = edit.EditAN(text)
+	return text
 }
