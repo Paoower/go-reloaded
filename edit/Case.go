@@ -90,13 +90,18 @@ func applyCaseToNWords(segment string, num int, caseFunc func(string) string) st
 	return strings.Join(words, " ")
 }
 
-// capitalizeWords capitalizes the first letter of each word in a string.
+// capitalizeWords capitalizes the first letter of each word and puts the rest of the letters in lowercase.
 func capitalizeWords(s string) string {
-	words := []rune(s)
-	for i := range words {
-		if i == 0 || !unicode.IsLetter(words[i-1]) {
-			words[i] = unicode.ToTitle(words[i])
+	words := strings.Fields(s)
+	for i, word := range words {
+		runes := []rune(word)
+		if len(runes) > 0 {
+			runes[0] = unicode.ToUpper(runes[0])
+			for j := 1; j < len(runes); j++ {
+				runes[j] = unicode.ToLower(runes[j])
+			}
+			words[i] = string(runes)
 		}
 	}
-	return string(words)
+	return strings.Join(words, " ")
 }

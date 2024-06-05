@@ -18,13 +18,13 @@ verify_output() {
 
 print_io() {
     printf "\033[35m$(cat $INPUT_FILE)\033[0m\n"
-    printf "\033[33m$(cat $OUTPUT_FILE)\033[0m"
+    printf "\033[33m$(cat $OUTPUT_FILE)\033[0m\n"
 }
 
 printf "\n////////////////////////TESTS///////////////////////////"
 printf "\n\033[35m◼\033[0m : Input \033[33m◼\033[0m : Output \033[36m◼\033[0m : Expected output"
 printf "\nTest 1 :\n"
-printf "it (cap) was the best of times, it was the worst of times (up) , it was the age of wisdom, it was the age of foolishness (cap, 6) , it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of darkness, it was the spring of hope, IT WAS THE (low, 3) winter of despair." > $INPUT_FILE
+printf "it (cap) was the best of times, it was the worst of times (up) , it was the age of wisdom, it was the age of foolishness (cap, 6) , it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of darkness, it was the spring of hope, IT WAS THE (low, 3) winter of despair.\n" > $INPUT_FILE
 $GO_PROGRAM $INPUT_FILE $OUTPUT_FILE
 print_io
 verify_output "It was the best of times, it was the worst of TIMES, it was the age of wisdom, It Was The Age Of Foolishness, it was the epoch of belief, it was the epoch of incredulity, it was the season of Light, it was the season of darkness, it was the spring of hope, it was the winter of despair."
