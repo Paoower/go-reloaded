@@ -8,6 +8,7 @@ import (
 )
 
 func main() {
+	// Check if there are enough arguments provided
 	if len(os.Args) == 1 {
 		fmt.Println("File name missing")
 		return
@@ -18,6 +19,7 @@ func main() {
 
 	inputName := os.Args[1]
 	outputName := os.Args[2]
+	// Read the content of the input file
 	input, err := ioutil.ReadFile(inputName)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -26,6 +28,7 @@ func main() {
 
 	text := string(input)
 	text = TextEditing(text)
+	// Write the edited text to the output file
 	err = ioutil.WriteFile(outputName, []byte(text), 755)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -33,6 +36,8 @@ func main() {
 	}
 }
 
+// TextEditing function applies various editing operations to the input text
+// using functions from the "edit" package and returns the edited text.
 func TextEditing(text string) string {
 	text = edit.EditHexBin(text)
 	text = edit.EditCase(text)

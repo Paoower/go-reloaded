@@ -4,38 +4,49 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode"
 )
 
+// EditCase function performs various case modifications to the input text based on specified patterns.
+// It supports three patterns: (up) for uppercase, (low) for lowercase, and (cap) for capitalized.
 func EditCase(text string) string {
+	// Match uppercase, lowercase, and capitalized patterns
 	upTrim := regexp.MustCompile(`(\b\w+\b) \(up\)`)
+	lowTrim := regexp.MustCompile(`(\b\w+\b) \(low\)`)
+	capTrim := regexp.MustCompile(`(\b\w+\b) \(cap\)`)
+
+	// Replace uppercase patterns with uppercase text
 	text = upTrim.ReplaceAllStringFunc(text, func(match string) string {
 		section := strings.Split(match, " ")
 		return strings.ToUpper(section[0])
 	})
 
-	lowTrim := regexp.MustCompile(`(\b\w+\b) \(low\)`)
+	// Replace lowercase patterns with lowercase text
 	text = lowTrim.ReplaceAllStringFunc(text, func(match string) string {
 		section := strings.Split(match, " ")
 		return strings.ToLower(section[0])
 	})
 
-	capTrim := regexp.MustCompile(`(\b\w+\b) \(cap\)`)
+	// Replace capitalized patterns with capitalized text
 	text = capTrim.ReplaceAllStringFunc(text, func(match string) string {
 		section := strings.Split(match, " ")
-		return strings.Title(section[0])
+		return capitalizeWords(section[0])
 	})
 
+	// Match patterns with specified number of words and case
 	upNTrim := regexp.MustCompile(`\b(\w+\b\s+){0,}\b\w+\b\s+\(up, \d+\)`)
 	lowNTrim := regexp.MustCompile(`\b(\w+\b\s+){0,}\b\w+\b\s+\(low, \d+\)`)
 	capNTrim := regexp.MustCompile(`\b(\w+\b\s+){0,}\b\w+\b\s+\(cap, \d+\)`)
 
+	// Process patterns with specified number of words and case
 	text = processMultipleCase(text, upNTrim, strings.ToUpper)
 	text = processMultipleCase(text, lowNTrim, strings.ToLower)
-	text = processMultipleCase(text, capNTrim, strings.Title)
+	text = processMultipleCase(text, capNTrim, capitalizeWords)
 
 	return text
 }
 
+// processMultipleCase applies case modifications to patterns with specified number of words (func,nb).
 func processMultipleCase(text string, Trim *regexp.Regexp, caseFunc func(string) string) string {
 	matches := Trim.FindAllStringSubmatchIndex(text, -1)
 	if len(matches) == 0 {
@@ -61,6 +72,7 @@ func processMultipleCase(text string, Trim *regexp.Regexp, caseFunc func(string)
 	return result.String()
 }
 
+// applyCaseToNWords applies case modification to a specified number of words in a segment of text.
 func applyCaseToNWords(segment string, num int, caseFunc func(string) string) string {
 	words := strings.Fields(segment)
 	trimIndex := len(words) - 2
@@ -76,4 +88,15 @@ func applyCaseToNWords(segment string, num int, caseFunc func(string) string) st
 	}
 
 	return strings.Join(words, " ")
+}
+
+// capitalizeWords capitalizes the first letter of each word in a string.
+func capitalizeWords(s string) string {
+	words := []rune(s)
+	for i := range words {
+		if i == 0 || !unicode.IsLetter(words[i-1]) {
+			words[i] = unicode.ToTitle(words[i])
+		}
+	}
+	return string(words)
 }

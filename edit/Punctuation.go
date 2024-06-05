@@ -1,32 +1,42 @@
 package edit
 
 import (
-	"regexp"
 	"strings"
 )
 
+// EditPunctuation function manipulates the punctuation in the input text to ensure proper spacing and placement.
 func EditPunctuation(text string) string {
-	// Définir l'expression régulière pour les ponctuations individuelles
-	Punc := regexp.MustCompile(`\s*([.,!?:;])\s*`)
-	// Définir l'expression régulière pour les ponctuations multiples (par exemple, ... ou !?)
-	reMultiplePunc := regexp.MustCompile(`\s*([.]{3}|!?\.{2,}|[!?]{2,})\s*`)
+	puncs := []string{",", ".", "!", "?", ":", ";"}
+	s := strings.Fields(text)
 
-	// Remplacer les ponctuations individuelles par le bon format
-	text = Punc.ReplaceAllString(text, "$1 ")
+	// Handle punctuation in the middle of a string connecting to word after
+	for i, word := range s {
+		for _, punc := range puncs {
+			if string(word[0]) == punc && string(word[len(word)-1]) != punc {
+				s[i-1] += punc
+				s[i] = word[1:]
+			}
+		}
+	}
 
-	// Remplacer les ponctuations multiples par le bon format
-	text = reMultiplePunc.ReplaceAllStringFunc(text, func(p string) string {
-		// Enlever les espaces autour des ponctuations multiples
-		return strings.TrimSpace(p)
-	})
+	// Handle punctuation at the end of a string
+	for i, word := range s {
+		for _, punc := range puncs {
+			if (string(word[0]) == punc) && (s[len(s)-1] == s[i]) {
+				s[i-1] += word
+				s = s[:len(s)-1]
+			}
+		}
+	}
 
-	// Définir l'expression régulière pour corriger les espaces entre les ponctuations
-	reFixSpaces := regexp.MustCompile(`([.,!?:;])\s+([.,!?:;])`)
-	// Enlever l'espace entre les ponctuations qui ne devraient pas en avoir
-	text = reFixSpaces.ReplaceAllString(text, "$1$2")
-
-	// Enlever les espaces en début et fin de texte
-	text = strings.TrimSpace(text)
-
-	return text
+	// Handle punctuation in the middle of a string
+	for i, word := range s {
+		for _, punc := range puncs {
+			if string(word[0]) == punc && string(word[len(word)-1]) == punc && s[i] != s[len(s)-1] {
+				s[i-1] += word
+				s = append(s[:i], s[i+1:]...)
+			}
+		}
+	}
+	return strings.Join(s, " ")
 }
